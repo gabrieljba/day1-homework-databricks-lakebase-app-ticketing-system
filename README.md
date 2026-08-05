@@ -4,14 +4,33 @@ A fully-featured internal support ticketing system built as a Databricks App wit
 
 ## Features
 
+### Core Ticketing
 * 🎫 **Create and Manage Tickets** - Users can create support tickets with title, priority, category, and initial message
 * 💬 **Message Threading** - Add multiple messages to any ticket for back-and-forth communication
 * 🔄 **Status Management** - Update ticket status (Open → In Progress → Resolved) with automatic timestamp tracking
 * 🎯 **Priority Levels** - Four priority levels: Low, Medium, High, Urgent
-* 📊 **Filtering** - Filter tickets by status and priority
-* 🔍 **Ticket Details** - View complete ticket history with all messages in chronological order
 * 👤 **User Attribution** - Automatic tracking of who created tickets and messages
 * 📅 **Timestamps** - Track creation time, last update, and resolution time
+
+### Search, Filter & Sort
+* 🔍 **Search by Title** - Real-time search as you type (case-insensitive)
+* 📊 **Advanced Filtering** - Filter tickets by status and priority (combined filters supported)
+* 📈 **Multiple Sort Options**:
+  - Newest First (default)
+  - Oldest First
+  - Highest Priority First (Urgent → High → Medium → Low)
+  - Lowest Priority First (Low → Medium → High → Urgent)
+  - Status Order (Open → In Progress → Resolved)
+
+### Visual Enhancements
+* 🎨 **Colored Status Badges** - Green (Open), Blue (In Progress), Gray (Resolved)
+* 🔴 **Colored Priority Badges** - Gray (Low), Orange (Medium), Red (High), Bright Red (Urgent)
+* 🌈 **Dynamic Dropdown Colors** - Status/Priority dropdowns match their badge colors
+
+### Ticket Management
+* 🗑️ **Delete Tickets** - Delete tickets with confirmation dialog (cascades to all messages)
+* 🔒 **Business Rules** - Cannot change priority on resolved tickets (must reopen first)
+* ✅ **Smart Panel Clearing** - Right panel clears when filtered ticket is no longer visible
 
 ## Architecture
 
@@ -158,7 +177,12 @@ Once deployed, open the app URL from the Apps UI to access the ticketing system.
       "assigned_to": "support@company.com"
     }
     ```
+  - Business Rule: Cannot change priority on resolved tickets unless status is also being updated
   - Returns: Updated ticket object
+
+* **`DELETE /api/tickets/<ticket_id>`** - Delete a ticket
+  - Deletes the ticket and all associated messages (CASCADE)
+  - Returns: Success message with deleted ticket ID
 
 ### Messages
 
@@ -185,12 +209,13 @@ Once deployed, open the app URL from the Apps UI to access the ticketing system.
 ```
 .
 ├── app.py                 # Flask application with all API routes
-├── lakebase.py           # Lakebase connection helper
+├── lakebase.py           # Lakebase connection helper with transaction management
 ├── app.yaml              # Databricks App deployment config
 ├── setup_secrets.py      # One-time secret setup script
 ├── requirements.txt      # Python dependencies
+├── reset_tables.sql      # Optional script to drop/recreate tables
 ├── templates/
-│   └── index.html       # Single-page ticketing UI
+│   └── index.html       # Single-page ticketing UI with search/filter/sort
 └── README.md            # This file
 ```
 
@@ -207,12 +232,63 @@ Once deployed, open the app URL from the Apps UI to access the ticketing system.
 
 1. Browse tickets in the left panel
 2. Click on a ticket to view its details and message history
-3. Use the dropdowns to update status and priority
+3. Use the colored dropdowns to update status and priority (dropdown backgrounds match badge colors)
 4. Add new messages using the message input at the bottom
+5. Click the **🗑️ Delete Ticket** button (top-right) to delete a ticket with confirmation
 
-### Filtering Tickets
+### Searching, Filtering & Sorting
 
-Use the **Status** and **Priority** filters at the top of the ticket list to narrow down the view.
+* **Search**: Type in the search box to filter tickets by title in real-time
+* **Filter by Status**: Use the Status dropdown (All/Open/In Progress/Resolved)
+* **Filter by Priority**: Use the Priority dropdown (All/Low/Medium/High/Urgent)
+* **Sort**: Choose sort order from the Sort dropdown:
+  - Newest First (default)
+  - Oldest First
+  - Highest Priority First
+  - Lowest Priority First
+  - Status Order
+* **Combine**: Search, filters, and sort work together
+
+### Business Rules
+
+* ⚠️ **Resolved Ticket Priority**: Cannot change priority on a resolved ticket unless you also change its status to reopen it
+* 🗑️ **Delete Confirmation**: Deleting a ticket requires confirmation and will also delete all its messages (CASCADE)
+
+## Technical Implementation
+
+### Transactional Consistency
+
+* **`run_write_returning()`** - Used for all INSERT/UPDATE operations that need to return data
+  - Executes SQL with RETURNING clause
+  - Commits transaction before returning results
+  - Prevents foreign key violations and ensures data consistency
+
+* **`run_write()`** - Used for DELETE operations
+  - Commits transaction immediately
+  - Returns affected row count
+
+### Key Files
+
+* **`app.py`** - Flask application with all API routes and business logic
+  - Uses `run_write_returning()` for all INSERT/UPDATE/RETURNING operations (lines 183, 258, 302)
+  - Uses `run_write()` for DELETE operations (line 279)
+  - Enforces business rule: No priority changes on resolved tickets
+
+* **`lakebase.py`** - Database connection helper with transaction management
+  - `run_query()` - For SELECT queries
+  - `run_write()` - For DELETE with commit
+  - `run_write_returning()` - For INSERT/UPDATE with RETURNING and commit
+
+* **`templates/index.html`** - Single-page application with:
+  - Real-time search and filtering
+  - Client-side sorting (no backend calls)
+  - Dynamic dropdown coloring with persistence
+  - Smart panel clearing when filtered tickets aren't visible
+
+### Recent Bug Fixes
+
+* ✅ **Dropdown Color Persistence** - Fixed issue where status/priority dropdown colors would briefly appear then disappear after updates. Now colors persist correctly.
+* ✅ **Ghost Ticket Panel** - Fixed issue where right panel would still show a ticket after it was filtered out of the list. Panel now clears automatically.
 
 ## Enabling Change Data Feed (CDF) for Lakebase Tables
 
