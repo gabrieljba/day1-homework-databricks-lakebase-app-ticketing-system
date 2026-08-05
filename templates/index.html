@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Massive Stock Watchlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internal Support Ticketing System</title>
   <style>
     * {
       margin: 0;
@@ -14,18 +15,18 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 40px 20px;
+      padding: 20px;
       color: #2d3748;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1400px;
       margin: 0 auto;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       color: white;
     }
 
@@ -39,258 +40,261 @@
     .subtitle {
       font-size: 16px;
       opacity: 0.95;
-      font-weight: 400;
     }
 
-    .card {
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: calc(100vh - 180px);
+    }
+
+    .panel {
       background: white;
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 32px;
-      margin-bottom: 32px;
-    }
-
-    .hint {
-      color: #718096;
-      font-size: 14px;
-      margin-bottom: 24px;
-      line-height: 1.6;
-      padding: 12px 16px;
-      background: #edf2f7;
-      border-radius: 8px;
-      border-left: 4px solid #667eea;
-    }
-
-    form {
       display: flex;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .form-group {
-      flex: 1;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #4a5568;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      font-weight: 500;
-    }
-
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    input[type="text"]::placeholder {
-      color: #cbd5e0;
-    }
-
-    button {
-      padding: 14px 32px;
-      font-size: 16px;
-      font-weight: 600;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-      white-space: nowrap;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    #result {
-      margin-top: 24px;
-      padding: 16px 20px;
-      border-radius: 10px;
-      min-height: 20px;
-      font-size: 14px;
-      font-weight: 500;
-      display: none;
-      animation: slideIn 0.3s ease;
-    }
-
-    #result.success {
-      display: block;
-      background: #c6f6d5;
-      color: #22543d;
-      border-left: 4px solid #38a169;
-    }
-
-    #result.error {
-      display: block;
-      background: #fed7d7;
-      color: #742a2a;
-      border-left: 4px solid #e53e3e;
-    }
-
-    #result.loading {
-      display: block;
-      background: #bee3f8;
-      color: #2c5282;
-      border-left: 4px solid #3182ce;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .table-container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      flex-direction: column;
       overflow: hidden;
     }
 
-    .table-header {
-      padding: 24px 32px;
+    .panel-header {
+      padding: 20px 24px;
       border-bottom: 2px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f7fafc;
     }
 
-    .table-header h2 {
+    .panel-header h2 {
       font-size: 20px;
       font-weight: 700;
       color: #2d3748;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .panel-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
     }
 
-    thead {
-      background: #f7fafc;
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
-    th {
-      text-align: left;
-      padding: 16px 32px;
+    .filter-group {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .filter-group label {
+      display: block;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
       color: #718096;
+      margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border-bottom: 2px solid #e2e8f0;
     }
 
-    td {
-      padding: 16px 32px;
-      font-size: 15px;
-      color: #4a5568;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    tbody tr {
+    select, input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
       transition: all 0.2s ease;
+      font-family: inherit;
     }
 
-    tbody tr:hover {
-      background: #f7fafc;
-      transform: scale(1.01);
+    select:focus, input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    tbody tr:last-child td {
-      border-bottom: none;
+    .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
-    .symbol-cell {
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #718096;
+    }
+
+    .btn-success {
+      background: #38a169;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .ticket-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ticket-card {
+      padding: 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: white;
+    }
+
+    .ticket-card:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .ticket-card.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .ticket-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .ticket-id {
+      font-size: 12px;
       font-weight: 700;
       color: #667eea;
+      text-transform: uppercase;
+    }
+
+    .ticket-title {
       font-size: 16px;
-    }
-
-    .price-cell {
       font-weight: 600;
-      color: #38a169;
+      color: #2d3748;
+      margin-bottom: 8px;
     }
 
-    .delete-btn {
+    .ticket-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-open {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+
+    .badge-in_progress {
+      background: #bee3f8;
+      color: #2c5282;
+    }
+
+    .badge-resolved {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .badge-low {
+      background: #e2e8f0;
+      color: #4a5568;
+    }
+
+    .badge-medium {
+      background: #feebc8;
+      color: #744210;
+    }
+
+    .badge-high {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+
+    .badge-urgent {
       background: #fc8181;
       color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
+    }
+
+    /* Colored dropdowns */
+    select.status-open {
+      background: #c6f6d5 !important;
+      color: #22543d !important;
       font-weight: 600;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    select.status-in_progress {
+      background: #bee3f8 !important;
+      color: #2c5282 !important;
+      font-weight: 600;
+    }
+    
+    select.status-resolved {
+      background: #e2e8f0 !important;
+      color: #4a5568 !important;
+      font-weight: 600;
+    }
+    
+    select.priority-low {
+      background: #e2e8f0 !important;
+      color: #4a5568 !important;
+      font-weight: 600;
+    }
+    
+    select.priority-medium {
+      background: #feebc8 !important;
+      color: #744210 !important;
+      font-weight: 600;
+    }
+    
+    select.priority-high {
+      background: #fed7d7 !important;
+      color: #742a2a !important;
+      font-weight: 600;
+    }
+    
+    select.priority-urgent {
+      background: #fc8181 !important;
+      color: white !important;
+      font-weight: 600;
     }
 
-    .delete-btn:hover {
-      background: #f56565;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
-    .delete-btn:active {
-      transform: translateY(0);
-    }
-
-    th.sortable {
-      cursor: pointer;
-      user-select: none;
-      position: relative;
-      padding-right: 24px;
-    }
-
-    th.sortable:hover {
-      background: #edf2f7;
-    }
-
-    th.sortable::after {
-      content: '⇅';
-      position: absolute;
-      right: 12px;
-      opacity: 0.3;
-      font-size: 14px;
-    }
-
-    th.sortable.asc::after {
-      content: '↑';
-      opacity: 1;
-    }
-
-    th.sortable.desc::after {
-      content: '↓';
-      opacity: 1;
-    }
 
     .empty-state {
       text-align: center;
-      padding: 60px 32px;
+      padding: 60px 20px;
       color: #a0aec0;
     }
 
@@ -300,9 +304,211 @@
       opacity: 0.5;
     }
 
-    .empty-state-text {
+    .ticket-detail-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      color: #a0aec0;
       font-size: 16px;
-      font-weight: 500;
+    }
+
+    .ticket-detail-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .ticket-detail-header {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .ticket-detail-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 16px;
+    }
+
+    .ticket-detail-meta {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-weight: 600;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      color: #2d3748;
+    }
+
+    .messages-section {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .messages-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2d3748;
+      margin-bottom: 16px;
+    }
+
+    .message {
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border-left: 4px solid #667eea;
+      background: #f7fafc;
+      border-radius: 8px;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .message-author {
+      font-weight: 600;
+      color: #2d3748;
+    }
+
+    .message-time {
+      color: #718096;
+    }
+
+    .message-text {
+      color: #4a5568;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .add-message-form {
+      border-top: 2px solid #e2e8f0;
+      padding-top: 16px;
+    }
+
+    .add-message-form textarea {
+      min-height: 80px;
+      margin-bottom: 12px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      margin: auto;
+    }
+
+    .modal-header {
+      margin-bottom: 24px;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 8px;
+    }
+
+    .form-group.required label::after {
+      content: " *";
+      color: #e53e3e;
+    }
+
+    .message-box {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message-box.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border-left: 4px solid #38a169;
+      display: block;
+    }
+
+    .message-box.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border-left: 4px solid #e53e3e;
+      display: block;
+    }
+
+    .update-controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .panel {
+        min-height: 500px;
+      }
     }
 
     @media (max-width: 640px) {
@@ -310,26 +516,16 @@
         font-size: 28px;
       }
 
-      .card {
-        padding: 24px;
+      .panel-body {
+        padding: 16px;
       }
 
-      form {
-        flex-direction: column;
-        align-items: stretch;
+      .ticket-detail-meta {
+        grid-template-columns: 1fr;
       }
 
-      button {
-        width: 100%;
-      }
-
-      th, td {
-        padding: 12px 16px;
-        font-size: 13px;
-      }
-
-      .table-header {
-        padding: 20px 16px;
+      .update-controls {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -337,212 +533,583 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1>📈 Stock Watchlist</h1>
-      <p class="subtitle">Track your favorite stocks in real-time</p>
+      <h1>🎫 Support Ticketing System</h1>
+      <p class="subtitle">Create, track, and resolve support tickets</p>
     </div>
 
-    <div class="card">
-      <p class="hint">💡 Enter a single ticker symbol to fetch the latest price and add it to your personalized watchlist.</p>
-
-      <form id="stock-form">
-        <div class="form-group">
-          <label for="symbol">Ticker Symbol</label>
-          <input type="text" id="symbol" name="symbol" placeholder="e.g., AAPL, TSLA, MSFT" required>
+    <div class="main-content">
+      <!-- Tickets List Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>All Tickets</h2>
+          <button class="btn btn-small" onclick="openCreateModal()">+ New Ticket</button>
         </div>
-        <button type="submit">Add to Watchlist</button>
-      </form>
-
-      <div id="result"></div>
-    </div>
-
-    <div class="table-container">
-      <div class="table-header">
-        <h2>My Watchlist</h2>
+        <div class="panel-body">
+          <div class="filters">
+            <div class="filter-group">
+              <label for="filter-search">Search Tickets</label>
+              <input type="text" id="filter-search" placeholder="Search by title..." oninput="filterTickets()" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; width: 100%;">
+            </div>
+            <div class="filter-group">
+              <label for="filter-status">Status</label>
+              <select id="filter-status" onchange="filterTickets()">
+                <option value="">All</option>
+                <option value="open">Open</option>
+                <option value="in_progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-priority">Priority</label>
+              <select id="filter-priority" onchange="filterTickets()">
+                <option value="">All</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="sort-by">Sort By</label>
+              <select id="sort-by" onchange="sortAndRenderTickets()">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="priority-high">Priority: High to Low</option>
+                <option value="priority-low">Priority: Low to High</option>
+                <option value="status">Status</option>
+              </select>
+            </div>
+          </div>
+          <div id="ticket-list" class="ticket-list">
+            <div class="empty-state">
+              <div class="empty-state-icon">🎫</div>
+              <div>No tickets found. Create one to get started!</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <table id="watchlist-table">
-        <thead>
-          <tr>
-            <th class="sortable" data-column="symbol">Symbol</th>
-            <th class="sortable" data-column="email">Email</th>
-            <th class="sortable" data-column="price">Latest Price</th>
-            <th class="sortable" data-column="updated">Last Updated</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="watchlist-body">
-          <tr class="empty-state">
-            <td colspan="5">
-              <div class="empty-state-icon">📊</div>
-              <div class="empty-state-text">Your watchlist is empty. Add a ticker symbol to get started!</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+      <!-- Ticket Detail Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Ticket Details</h2>
+        </div>
+        <div class="panel-body">
+          <div id="ticket-detail" class="ticket-detail-empty">
+            Select a ticket to view details
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Ticket Modal -->
+  <div id="create-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New Ticket</h2>
+      </div>
+      <form id="create-ticket-form" onsubmit="createTicket(event)">
+        <div class="form-group required">
+          <label for="ticket-title">Title</label>
+          <input type="text" id="ticket-title" required placeholder="Brief description of the issue">
+        </div>
+        <div class="form-group required">
+          <label for="ticket-priority">Priority</label>
+          <select id="ticket-priority" required>
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="ticket-category">Category</label>
+          <input type="text" id="ticket-category" placeholder="e.g., Technical, Billing, Feature Request">
+        </div>
+        <div class="form-group">
+          <label for="ticket-message">Initial Message</label>
+          <textarea id="ticket-message" rows="5" placeholder="Provide details about the issue..."></textarea>
+        </div>
+        <div id="create-message" class="message-box"></div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn">Create Ticket</button>
+        </div>
+      </form>
     </div>
   </div>
 
   <script>
-    const form = document.getElementById("stock-form");
-    const resultEl = document.getElementById("result");
-    const watchlistBody = document.getElementById("watchlist-body");
-    let watchlistData = [];
-    let currentSort = { column: null, direction: 'asc' };
+    let currentTicketId = null;
+    let tickets = [];
+    let allTickets = []; // Store all tickets for client-side filtering
 
-    async function loadWatchlist() {
+    async function loadTickets() {
       try {
-        const resp = await fetch("/watchlist");
+        // Load all tickets from backend
+        const resp = await fetch("/api/tickets");
         const data = await resp.json();
-        if (!resp.ok) {
-          showMessage("Error loading watchlist: " + (data.error || resp.statusText), "error");
-          return;
-        }
-        watchlistData = data;
-        renderWatchlist();
-      } catch (err) {
-        showMessage("Failed to load watchlist: " + err, "error");
-      }
-    }
-
-    function renderWatchlist() {
-      watchlistBody.innerHTML = "";
-      if (watchlistData.length === 0) {
-        watchlistBody.innerHTML = `
-          <tr class="empty-state">
-            <td colspan="5">
-              <div class="empty-state-icon">📊</div>
-              <div class="empty-state-text">Your watchlist is empty. Add a ticker symbol to get started!</div>
-            </td>
-          </tr>
-        `;
-      } else {
-        watchlistData.forEach((row) => {
-          const tr = document.createElement("tr");
-          const price = row.latest_price !== null && row.latest_price !== undefined
-            ? "$" + Number(row.latest_price).toFixed(2)
-            : "-";
-          const updated = row.updated_at ? new Date(row.updated_at).toLocaleString() : "-";
-          tr.innerHTML = `
-            <td class="symbol-cell">${row.symbol}</td>
-            <td>${row.email || "-"}</td>
-            <td class="price-cell">${price}</td>
-            <td>${updated}</td>
-            <td><button class="delete-btn" onclick="deleteFromWatchlist('${row.symbol}', '${row.email}')">Delete</button></td>
-          `;
-          watchlistBody.appendChild(tr);
-        });
-      }
-    }
-
-    function showMessage(message, type = "success") {
-      resultEl.className = type;
-      resultEl.textContent = message;
-      resultEl.style.display = "block";
-    }
-
-    async function deleteFromWatchlist(symbol, email) {
-      if (!confirm(`Are you sure you want to remove ${symbol} from your watchlist?`)) {
-        return;
-      }
-      
-      showMessage("⏳ Removing " + symbol + " from watchlist...", "loading");
-      
-      try {
-        const resp = await fetch("/watchlist", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ symbol, email }),
-        });
-        const data = await resp.json();
-        if (!resp.ok) {
-          showMessage("❌ " + (data.error || resp.statusText), "error");
-          return;
-        }
-        showMessage("✅ Successfully removed " + symbol + " from watchlist", "success");
-        loadWatchlist();
-      } catch (err) {
-        showMessage("❌ Request failed: " + err, "error");
-      }
-    }
-
-    function sortWatchlist(column) {
-      if (currentSort.column === column) {
-        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        currentSort.column = column;
-        currentSort.direction = 'asc';
-      }
-
-      // Update header indicators
-      document.querySelectorAll('th.sortable').forEach(th => {
-        th.classList.remove('asc', 'desc');
-        if (th.dataset.column === column) {
-          th.classList.add(currentSort.direction);
-        }
-      });
-
-      // Sort the data
-      watchlistData.sort((a, b) => {
-        let aVal, bVal;
         
-        switch(column) {
-          case 'symbol':
-            aVal = a.symbol || '';
-            bVal = b.symbol || '';
-            break;
-          case 'email':
-            aVal = a.email || '';
-            bVal = b.email || '';
-            break;
-          case 'price':
-            aVal = a.latest_price !== null && a.latest_price !== undefined ? Number(a.latest_price) : -Infinity;
-            bVal = b.latest_price !== null && b.latest_price !== undefined ? Number(b.latest_price) : -Infinity;
-            break;
-          case 'updated':
-            aVal = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-            bVal = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-            break;
+        if (!resp.ok) {
+          console.error("Error loading tickets:", data.error);
+          return;
+        }
+        
+        allTickets = data; // Store all tickets
+        filterTickets(); // Apply current filters
+      } catch (err) {
+        console.error("Failed to load tickets:", err);
+      }
+    }
+    
+    function filterTickets() {
+      const searchTerm = document.getElementById("filter-search").value.toLowerCase().trim();
+      const status = document.getElementById("filter-status").value;
+      const priority = document.getElementById("filter-priority").value;
+      
+      // Filter tickets based on all criteria
+      tickets = allTickets.filter(ticket => {
+        // Search filter - check if title contains search term
+        const matchesSearch = !searchTerm || ticket.title.toLowerCase().includes(searchTerm);
+        
+        // Status filter
+        const matchesStatus = !status || ticket.status === status;
+        
+        // Priority filter
+        const matchesPriority = !priority || ticket.priority === priority;
+        
+        return matchesSearch && matchesStatus && matchesPriority;
+      });
+      
+      // Check if currently selected ticket is in filtered results
+      if (currentTicketId) {
+        const selectedInResults = tickets.some(t => t.ticket_id === currentTicketId);
+        if (!selectedInResults) {
+          // Clear the right panel
+          currentTicketId = null;
+          document.getElementById("ticket-detail").innerHTML = `
+            <div class="ticket-detail-empty">
+              <div class="empty-icon">📋</div>
+              <div>Select a ticket to view details</div>
+            </div>
+          `;
+        }
+      }
+      
+      renderTickets();
+    }
+
+
+    function sortAndRenderTickets() {
+      const sortBy = document.getElementById("sort-by").value;
+      
+      // Priority order mapping
+      const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+      const statusOrder = { open: 1, in_progress: 2, resolved: 3 };
+      
+      tickets.sort((a, b) => {
+        switch(sortBy) {
+          case "newest":
+            return new Date(b.created_at) - new Date(a.created_at);
+          
+          case "oldest":
+            return new Date(a.created_at) - new Date(b.created_at);
+          
+          case "priority-high":
+            const aPriority = priorityOrder[a.priority] || 0;
+            const bPriority = priorityOrder[b.priority] || 0;
+            return bPriority - aPriority;
+          
+          case "priority-low":
+            const aPriorityLow = priorityOrder[a.priority] || 0;
+            const bPriorityLow = priorityOrder[b.priority] || 0;
+            return aPriorityLow - bPriorityLow;
+          
+          case "status":
+            const aStatus = statusOrder[a.status] || 0;
+            const bStatus = statusOrder[b.status] || 0;
+            return aStatus - bStatus;
+          
           default:
             return 0;
         }
-
-        if (aVal < bVal) return currentSort.direction === 'asc' ? -1 : 1;
-        if (aVal > bVal) return currentSort.direction === 'asc' ? 1 : -1;
-        return 0;
       });
-
-      renderWatchlist();
+      
+      renderTickets();
     }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const symbol = document.getElementById("symbol").value.trim().toUpperCase();
-      showMessage("⏳ Adding " + symbol + " to watchlist...", "loading");
+    function renderTickets() {
+      const listEl = document.getElementById("ticket-list");
+      
+      if (tickets.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🎫</div>
+            <div>No tickets found. Create one to get started!</div>
+          </div>
+        `;
+        return;
+      }
+      
+      listEl.innerHTML = tickets.map(ticket => `
+        <div class="ticket-card ${ticket.ticket_id === currentTicketId ? 'selected' : ''}" 
+             onclick="selectTicket(${ticket.ticket_id})">
+          <div class="ticket-card-header">
+            <div class="ticket-id">#${ticket.ticket_id}</div>
+            <div>
+              <span class="badge badge-${ticket.status}">${formatStatus(ticket.status)}</span>
+              ${ticket.priority ? `<span class="badge badge-${ticket.priority}">${ticket.priority}</span>` : ''}
+            </div>
+          </div>
+          <div class="ticket-title">${escapeHtml(ticket.title)}</div>
+          <div class="ticket-meta">
+            <span>👤 ${escapeHtml(ticket.created_by)}</span>
+            <span>📅 ${formatDate(ticket.created_at)}</span>
+            ${ticket.category ? `<span>📁 ${escapeHtml(ticket.category)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
 
+
+    function updateDropdownColors() {
+      // Update status dropdown color
+      const statusSelect = document.getElementById("update-status");
+      if (statusSelect) {
+        statusSelect.className = statusSelect.className.replace(/status-\w+/g, '');
+        if (statusSelect.value) {
+          statusSelect.classList.add(`status-${statusSelect.value}`);
+        }
+      }
+      
+      // Update priority dropdown color
+      const prioritySelect = document.getElementById("update-priority");
+      if (prioritySelect) {
+        prioritySelect.className = prioritySelect.className.replace(/priority-\w+/g, '');
+        if (prioritySelect.value) {
+          prioritySelect.classList.add(`priority-${prioritySelect.value}`);
+        }
+      }
+    }
+
+    async function selectTicket(ticketId) {
+      currentTicketId = ticketId;
+      renderTickets(); // Update selection in list
+      
       try {
-        const resp = await fetch("/watchlist", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ symbol }),
-        });
-        const data = await resp.json();
-        if (!resp.ok) {
-          showMessage("❌ " + (data.error || resp.statusText), "error");
+        const [ticketResp, messagesResp] = await Promise.all([
+          fetch(`/api/tickets/${ticketId}`),
+          fetch(`/api/tickets/${ticketId}/messages`)
+        ]);
+        
+        const ticket = await ticketResp.json();
+        const messages = await messagesResp.json();
+        
+        if (!ticketResp.ok) {
+          showError("ticket-detail", "Failed to load ticket details");
           return;
         }
-        showMessage("✅ Successfully added " + data.symbol + " at $" + Number(data.latest_price).toFixed(2), "success");
-        document.getElementById("symbol").value = "";
-        loadWatchlist();
+        
+        renderTicketDetail(ticket, messages);
+        
+        // Apply dropdown colors immediately after rendering detail panel
+        setTimeout(updateDropdownColors, 0);
       } catch (err) {
-        showMessage("❌ Request failed: " + err, "error");
+        console.error("Failed to load ticket:", err);
+        showError("ticket-detail", "Failed to load ticket details");
+      }
+    }
+
+    function renderTicketDetail(ticket, messages) {
+      const detailEl = document.getElementById("ticket-detail");
+      
+      detailEl.innerHTML = `
+        <div class="ticket-detail-content">
+          <div class="ticket-detail-header">
+            <div class="ticket-detail-title">
+              #${ticket.ticket_id} - ${escapeHtml(ticket.title)}
+              <button onclick="deleteTicket(${ticket.ticket_id})" 
+                      style="float: right; background: #f56565; color: white; border: none; 
+                             padding: 6px 14px; border-radius: 6px; cursor: pointer; 
+                             font-size: 13px; font-weight: 600; margin-left: 16px;">
+                🗑️ Delete Ticket
+              </button>
+            </div>
+            
+            <div class="update-controls">
+              <div>
+                <label for="update-status" style="font-size: 12px; font-weight: 600; color: #718096; margin-bottom: 6px; display: block;">STATUS</label>
+                <select id="update-status" onchange="updateTicketField('status', this.value); updateDropdownColors();">
+                  <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option>
+                  <option value="in_progress" ${ticket.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                  <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                </select>
+              </div>
+              <div>
+                <label for="update-priority" style="font-size: 12px; font-weight: 600; color: #718096; margin-bottom: 6px; display: block;">
+                  PRIORITY ${ticket.status === 'resolved' ? '<span style="color: #fc8181; font-size: 10px;">(Reopen ticket to edit)</span>' : ''}
+                </label>
+                <select id="update-priority" onchange="updateTicketField('priority', this.value); updateDropdownColors();" ${ticket.status === 'resolved' ? 'disabled' : ''}>
+                  <option value="low" ${ticket.priority === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${ticket.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${ticket.priority === 'high' ? 'selected' : ''}>High</option>
+                  <option value="urgent" ${ticket.priority === 'urgent' ? 'selected' : ''}>Urgent</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="ticket-detail-meta">
+              <div class="meta-item">
+                <span class="meta-label">Created By</span>
+                <span class="meta-value">${escapeHtml(ticket.created_by)}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Created At</span>
+                <span class="meta-value">${formatDateTime(ticket.created_at)}</span>
+              </div>
+              ${ticket.category ? `
+                <div class="meta-item">
+                  <span class="meta-label">Category</span>
+                  <span class="meta-value">${escapeHtml(ticket.category)}</span>
+                </div>
+              ` : ''}
+              ${ticket.assigned_to ? `
+                <div class="meta-item">
+                  <span class="meta-label">Assigned To</span>
+                  <span class="meta-value">${escapeHtml(ticket.assigned_to)}</span>
+                </div>
+              ` : ''}
+              <div class="meta-item">
+                <span class="meta-label">Last Updated</span>
+                <span class="meta-value">${formatDateTime(ticket.updated_at)}</span>
+              </div>
+              ${ticket.resolved_at ? `
+                <div class="meta-item">
+                  <span class="meta-label">Resolved At</span>
+                  <span class="meta-value">${formatDateTime(ticket.resolved_at)}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+          
+          <div class="messages-section">
+            <div class="messages-title">Messages (${messages.length})</div>
+            ${messages.length === 0 ? '<div class="empty-state" style="padding: 20px;">No messages yet.</div>' : ''}
+            ${messages.map(msg => `
+              <div class="message">
+                <div class="message-header">
+                  <span class="message-author">👤 ${escapeHtml(msg.author)}</span>
+                  <span class="message-time">${formatDateTime(msg.created_at)}</span>
+                </div>
+                <div class="message-text">${escapeHtml(msg.message_text)}</div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="add-message-form">
+            <textarea id="new-message" placeholder="Add a message..."></textarea>
+            <div class="form-actions">
+              <button class="btn" onclick="addMessage()">Send Message</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function updateTicketField(field, value) {
+      if (!currentTicketId) return;
+      
+      try {
+        const resp = await fetch(`/api/tickets/${currentTicketId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ [field]: value })
+        });
+        
+        const data = await resp.json();
+        
+        if (!resp.ok) {
+          alert("Error: " + (data.error || "Failed to update ticket"));
+          return;
+        }
+        
+        // Reload tickets to update the list
+        await loadTickets();
+        
+        // Reload current ticket to refresh details
+        const ticketToReload = currentTicketId;
+        await selectTicket(ticketToReload);
+        
+        // Ensure dropdown colors are applied after reload (backup call)
+        setTimeout(updateDropdownColors, 100);
+      } catch (err) {
+        console.error("Failed to update ticket:", err);
+        alert("Failed to update ticket");
+      }
+    }
+
+    async function deleteTicket(ticketId) {
+      // Confirmation dialog
+      const confirmed = confirm(`Are you sure you want to delete ticket #${ticketId}?\n\nThis action cannot be undone and will delete all messages associated with this ticket.`);
+      
+      if (!confirmed) {
+        return; // User cancelled
+      }
+      
+      try {
+        const resp = await fetch(`/api/tickets/${ticketId}`, {
+          method: "DELETE"
+        });
+        
+        const data = await resp.json();
+        
+        if (!resp.ok) {
+          alert("Error: " + (data.error || "Failed to delete ticket"));
+          return;
+        }
+        
+        // Clear the detail panel
+        currentTicketId = null;
+        document.getElementById("ticket-detail").innerHTML = `
+          <div class="ticket-detail-empty">
+            <div class="empty-icon">📋</div>
+            <div>Select a ticket to view details</div>
+          </div>
+        `;
+        
+        // Reload tickets list
+        await loadTickets();
+        
+        alert("Ticket deleted successfully");
+      } catch (err) {
+        console.error("Failed to delete ticket:", err);
+        alert("Failed to delete ticket");
+      }
+    }
+
+
+    async function addMessage() {
+      if (!currentTicketId) return;
+      
+      const messageText = document.getElementById("new-message").value.trim();
+      if (!messageText) {
+        alert("Please enter a message");
+        return;
+      }
+      
+      try {
+        const resp = await fetch(`/api/tickets/${currentTicketId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: messageText })
+        });
+        
+        const data = await resp.json();
+        
+        if (!resp.ok) {
+          alert("Error: " + (data.error || "Failed to add message"));
+          return;
+        }
+        
+        // Clear input
+        document.getElementById("new-message").value = '';
+        
+        // Reload current ticket
+        selectTicket(currentTicketId);
+      } catch (err) {
+        console.error("Failed to add message:", err);
+        alert("Failed to add message");
+      }
+    }
+
+    function openCreateModal() {
+      document.getElementById("create-modal").classList.add("active");
+      document.getElementById("ticket-title").focus();
+    }
+
+    function closeCreateModal() {
+      document.getElementById("create-modal").classList.remove("active");
+      document.getElementById("create-ticket-form").reset();
+      document.getElementById("create-message").style.display = "none";
+    }
+
+    async function createTicket(event) {
+      event.preventDefault();
+      
+      const title = document.getElementById("ticket-title").value.trim();
+      const priority = document.getElementById("ticket-priority").value;
+      const category = document.getElementById("ticket-category").value.trim();
+      const message = document.getElementById("ticket-message").value.trim();
+      
+      try {
+        const resp = await fetch("/api/tickets", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, priority, category, message })
+        });
+        
+        const data = await resp.json();
+        
+        const msgEl = document.getElementById("create-message");
+        
+        if (!resp.ok) {
+          msgEl.textContent = "Error: " + (data.error || "Failed to create ticket");
+          msgEl.className = "message-box error";
+          return;
+        }
+        
+        msgEl.textContent = "✅ Ticket created successfully!";
+        msgEl.className = "message-box success";
+        
+        setTimeout(() => {
+          closeCreateModal();
+          loadTickets();
+          selectTicket(data.ticket_id);
+        }, 1000);
+      } catch (err) {
+        console.error("Failed to create ticket:", err);
+        const msgEl = document.getElementById("create-message");
+        msgEl.textContent = "Failed to create ticket: " + err;
+        msgEl.className = "message-box error";
+      }
+    }
+
+    function formatStatus(status) {
+      return status.replace('_', ' ').toUpperCase();
+    }
+
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString();
+    }
+
+    function formatDateTime(dateStr) {
+      return new Date(dateStr).toLocaleString();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showError(elementId, message) {
+      document.getElementById(elementId).innerHTML = `
+        <div style="color: #e53e3e; text-align: center; padding: 40px;">
+          ${message}
+        </div>
+      `;
+    }
+
+    // Close modal when clicking outside
+    document.getElementById("create-modal").addEventListener('click', (e) => {
+      if (e.target.id === "create-modal") {
+        closeCreateModal();
       }
     });
 
-    // Add click handlers to sortable columns
-    document.querySelectorAll('th.sortable').forEach(th => {
-      th.addEventListener('click', () => sortWatchlist(th.dataset.column));
-    });
-
-    loadWatchlist();
+    // Load tickets on page load
+    loadTickets();
   </script>
 </body>
 </html>
