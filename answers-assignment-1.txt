@@ -1,0 +1,11 @@
+1. What was the most difficult part?
+
+To understando how I should apply what I learned in the first class, and from that onwards it was just been careful with the prompts to Gini and the configurations I had to set up for the App.
+
+2. How is Lakebase different from storing this data in a traditional analytics table?
+
+The low latency that allowed us to make lookups for live app operations, in this case the needed real-time transactions and Lakebase helped us with that.
+
+3. What feature would you add next?
+
+May be some feature to send emails to the ticket updates to the users.
